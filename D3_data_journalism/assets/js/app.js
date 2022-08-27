@@ -48,6 +48,7 @@ function xScale(smokeData, chosenXAxis) {
 
 
 
+
   // Setting x - Y-SCALE FUNCTION
   var chosenYAxis = "healthcare";
 
@@ -60,7 +61,7 @@ function xScale(smokeData, chosenXAxis) {
                  d3.max(smokeData, d =>  d[chosenYAxis])*1.1])
         .range([height, 0]);
 
-      console.log("Max height for chosen is  "+d3.max(smokeData, d =>  d[chosenYAxis]))  
+
       return yLinearScale;
     
     }
@@ -73,7 +74,7 @@ function xScale(smokeData, chosenXAxis) {
   */
 
   // function used for updating xAxis var upon click on axis label
-function renderAxes(newXScale, xAxis) {
+  function renderAxes(newXScale, xAxis) {
   var bottomAxis = d3.axisBottom(newXScale);
 
   xAxis.transition()
@@ -93,7 +94,6 @@ function renderAxes(newXScale, xAxis) {
       .duration(1000)
       .call(leftYAxis);
   
-      console.log("renderYAxes CALL ")
 
     return yAxis;
   }
@@ -102,10 +102,6 @@ function renderAxes(newXScale, xAxis) {
 // new circles
 function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYAxis) {
 
-
-  console.log("renderCircles")
-  console.log("chosenXAxis  "+chosenXAxis)
-  console.log("chosenYAxis  "+chosenYAxis)
 
 
   circlesGroup.transition()
@@ -118,6 +114,62 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYA
 }
 
 
+/*
+ * TOOLTIP
+ */
+
+
+// function used for updating circles group with new tooltip
+  function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
+
+    var x_label;
+    var y_label;
+    var x_sign;
+
+
+    
+    // x labels
+    if (chosenXAxis === "poverty") {
+        x_label = "Poverty:";  
+        x_sign  = "%"; 
+      }
+    else if (chosenXAxis === "age"){
+             x_label = "Age:"; 
+             x_sign  = ""}    
+    else {x_label = "Income:";
+          x_sign  = "$"
+    }
+
+    
+    // y labels
+    if (chosenYAxis === "healthcare") {
+        y_label = "Healthcare:";  }
+    else if (chosenYAxis === "smokes"){
+             y_label = "Smoke:"; }    
+    else {y_label = "Obesity:";
+      }
+  
+
+
+    var toolTip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([80, -60])
+      .html(function(d) {
+        return (`<b>${d.state}</b><br>${x_label} ${d[chosenXAxis]}${x_sign} <br>${y_label} ${d[chosenYAxis]}%`);
+      });
+
+    circlesGroup.call(toolTip);
+
+    circlesGroup.on("mouseover", function(data) {
+      toolTip.show(data);
+    })
+      // onmouseout event
+      .on("mouseout", function(data, index) {
+        toolTip.hide(data);
+      });
+
+    return circlesGroup;
+  }
 
 
 /* 
@@ -157,8 +209,6 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
 
-    console.log("leftAxis")
-    console.log(leftAxis)
 
 
       // append x axis
@@ -253,6 +303,14 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
 
 
 
+    /*
+     *  CALLING TOOLTIP
+     */
+
+      // updateToolTip function above csv import
+      var circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
+
+
   /*
   *
   */
@@ -263,10 +321,6 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
      // get value of selection
      var value = d3.select(this).attr("value");
 
-     console.log("Selected value:")
-     console.log(value)
-     console.log("Y Axis")
-     console.log(chosenYAxis)
 
      if (value !== chosenXAxis) {
 
@@ -283,6 +337,8 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
 
+       // updates tooltips with new info
+       circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
        // events = income, age, poverty
        // povertyLabel, ageLabel, incomeLabel
@@ -342,18 +398,12 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
    });  //x_label change
 
 
-      // x axis labels event listener
-  y_labelsGroup.selectAll("text").on("click", function() {
+      // y axis labels event listener
+      y_labelsGroup.selectAll("text").on("click", function() {
 
 
       var value = d3.select(this).attr("value");
    
-      console.log("y Selected value:")
-      console.log(value)
-
-      console.log('chosenXAxis')
-      console.log(chosenXAxis)
-
 
       if (value !== chosenYAxis) {
 
