@@ -37,7 +37,7 @@ function xScale(smokeData, chosenXAxis) {
    
     // create scales
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(smokeData, d => d[chosenXAxis]) * 0.8,
+      .domain([d3.min(smokeData, d => d[chosenXAxis]) * 0.9,
         d3.max(smokeData, d => d[chosenXAxis]) * 1.1
       ])
       .range([0, width]);
@@ -240,8 +240,8 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
     .attr("cy", d => yLinearScale(d[chosenYAxis]))
-    .attr("r", 10)
-    .attr("fill", "teal")
+    .attr("r", 15)
+    .attr("fill", "blue")
     .attr("opacity", ".5");
 
     var circleText = chartGroup.selectAll()
@@ -251,8 +251,9 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
       .text(d => (d.abbr))
       .attr("x", d => xLinearScale(d[chosenXAxis]))
       .attr("y", d => yLinearScale(d[chosenYAxis]))
-      .style("font-size", "8px")
+      .style("font-size", "10px")
       .attr("font-weight", 700)
+      .style('fill', 'white')
       .style("text-anchor", "middle");
 
 
