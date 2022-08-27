@@ -114,6 +114,17 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYA
 }
 
 
+function renderCircleText(circleText, newXScale, chosenXAxis, newYScale, chosenYAxis) {
+  circleText.transition()
+    .duration(1000)
+    .attr("x", d => newXScale(d[chosenXAxis]))
+    .attr("y", d => newYScale(d[chosenYAxis]));
+        
+  return circleText;
+}
+
+
+
 /*
  * TOOLTIP
  */
@@ -233,6 +244,19 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
     .attr("fill", "teal")
     .attr("opacity", ".5");
 
+    var circleText = chartGroup.selectAll()
+      .data(smokeData)
+      .enter()
+      .append("text")
+      .text(d => (d.abbr))
+      .attr("x", d => xLinearScale(d[chosenXAxis]))
+      .attr("y", d => yLinearScale(d[chosenYAxis]))
+      .style("font-size", "8px")
+      .attr("font-weight", 700)
+      .style("text-anchor", "middle");
+
+
+
 
     /*
      *  Create group for two x-axis labels
@@ -340,6 +364,9 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
        // updates tooltips with new info
        circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
+
+       circleText = renderCircleText(circleText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
+
        // events = income, age, poverty
        // povertyLabel, ageLabel, incomeLabel
 
@@ -423,7 +450,9 @@ d3.csv("assets/data/data.csv").then(function(smokeData, err) {
        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
         
 
+       circleText = renderCircleText(circleText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
         
+
         if (chosenYAxis === "healthcare") {
           
             healthcareLabel
